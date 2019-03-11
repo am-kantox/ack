@@ -59,7 +59,7 @@ defmodule Ack.MixProject do
       # main: @app_name,
       source_ref: "v#{@version}",
       canonical: "http://hexdocs.pm/#{@app}",
-      logo: "stuff/logo-48.png",
+      logo: "stuff/i/logo-48.png",
       source_url: "https://github.com/am-kantox/#{@app}"
     ]
   end
