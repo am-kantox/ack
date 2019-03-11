@@ -1,6 +1,6 @@
 # Ack
 
-**Tiny drop-in for painless acknowledgements across different applications.**
+[![CircleCI](https://circleci.com/gh/am-kantox/ack.svg?style=svg)](https://circleci.com/gh/am-kantox/ack)    **Tiny drop-in for painless acknowledgements across different applications.**
 
 ## About
 
