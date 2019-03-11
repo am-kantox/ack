@@ -1,13 +1,20 @@
 defmodule Ack.MixProject do
   use Mix.Project
 
+  @app :ack
+  @version "0.1.1"
+
   def project do
     [
-      app: :ack,
-      version: "0.1.0",
+      app: @app,
+      version: @version,
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      package: package(),
+      xref: [exclude: []],
+      description: description(),
+      deps: deps(),
+      docs: docs()
     ]
   end
 
@@ -22,8 +29,38 @@ defmodule Ack.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:camarero, "~> 0.5"}
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:camarero, "~> 0.5"},
+      {:credo, "~> 1.0", only: :dev},
+      {:ex_doc, ">= 0.0.0", only: :dev}
+    ]
+  end
+
+  defp description do
+    """
+    Tiny drop-in for painless acknowledgements across different applications.
+    """
+  end
+
+  defp package do
+    [
+      name: @app,
+      files: ~w|config lib mix.exs README.md|,
+      maintainers: ["Aleksei Matiushkin"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/am-kantox/#{@app}",
+        "Docs" => "https://hexdocs.pm/#{@app}"
+      }
+    ]
+  end
+
+  defp docs() do
+    [
+      # main: @app_name,
+      source_ref: "v#{@version}",
+      canonical: "http://hexdocs.pm/#{@app}",
+      logo: "stuff/logo-48.png",
+      source_url: "https://github.com/am-kantox/#{@app}"
     ]
   end
 end
