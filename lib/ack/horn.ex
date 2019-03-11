@@ -1,6 +1,7 @@
 defmodule Ack.Horn do
-  use Envio.Publisher, channel: :error
+  use Envio.Publisher
 
-  def error(what), do: broadcast(what)
-  def ok(channel, what), do: broadcast(channel, what)
+  def ack(what), do: broadcast(:ack, what)
+  def nack(what), do: broadcast(:nack, what)
+  def error(what), do: broadcast(:error, what)
 end

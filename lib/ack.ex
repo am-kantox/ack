@@ -12,29 +12,25 @@ defmodule Ack do
   In this scenario, `App1` might instruct `Ack` to listen for the `ack` from
     `App2` for a message
 
-  ```elixir
-  %{key: key, timeout: msecs, channel: :ack}
-  ```
+  - `%{key: key, timeout: msecs, channel: :ack}`
 
   where `key` is the unique identifier of the message to be acknowledged.
   Upon receival, if the `key` is known to the system, `Ack` will broadcast
   the message of the following shape
 
-  ```elixir
-  %{status: :ok, key: key, value: value}
-  ```
+  - `%{status: :ack, key: key}`
 
-  to `:ack` channel (unless configured otherwise, see later). `App1`
-  should be subscribed to `{Ack.Horn, :ack}` channel in order to receive
-  this message.
+  to `:ack` channel. `App1` should be subscribed to `{Ack.Horn, :ack}` channel
+  in order to receive this message.
 
-  If the `key` is unknown to the system, the message of the following shape
+  If the `key` is unknown to the system, on of the following possible messages
 
-  ```elixir
-  %{status: :error, key: key, value: value}
-  ```
+  - `%{status: :nack, key: key}`, when the `key` was explicitly not acked
+  - `%{status: :invalid, key: key}`, when the `key` is not known to the system
+  - `%{status: :unknown, key: key, value: value}`, when somewhat unexpected happened
 
-  will be broadcasted to `{Ack.Horn, :error}` channel.
+  The former one os routed to `{Ack.Horn, :nack}` channel, the last two
+  are broadcasted to `{Ack.Horn, :error}` channel.
 
   The broadcast is done with [`Envío`](https://hexdocs.pm/envio/envio.html)
     package, consider reading the documentation there to get more details about

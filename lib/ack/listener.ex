@@ -9,16 +9,28 @@ defmodule Ack.Listener do
       ) do
     {:noreply, state} = super(message, state)
 
-    case Ack.Active.plato_get(key) do
-      {:ok, %{channel: channel}} ->
-        Ack.Horn.ok(channel, %{status: :ok, key: key, value: value})
-        Ack.Active.plato_delete(key)
-
-      :error ->
-        Ack.Horn.error(%{status: :error, key: key, value: value})
-    end
+    do_handle_envio(value, key)
 
     {:noreply, state}
+  end
+
+  defp do_handle_envio("ack", key) do
+    case Ack.Active.plato_get(key) do
+      {:ok, %{channel: :ack}} ->
+        Ack.Active.plato_delete(key)
+        Ack.Horn.ack(%{status: :ack, key: key})
+
+      :error ->
+        Ack.Horn.error(%{status: :invalid, key: key})
+    end
+  end
+
+  defp do_handle_envio("nack", key) do
+    Ack.Horn.nack(%{status: :nack, key: key})
+  end
+
+  defp do_handle_envio(unknown, key) do
+    Ack.Horn.error(%{status: :unknown, key: key, value: unknown})
   end
 
   @doc false

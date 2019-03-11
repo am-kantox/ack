@@ -9,11 +9,29 @@ defmodule AckTest do
   setup do
     ast =
       quote generated: true do
-        use Envio.Subscriber, channels: [{Ack.Horn, :ack}, {Ack.Horn, :error}]
+        use Envio.Subscriber, channels: [{Ack.Horn, :ack}, {Ack.Horn, :nack}, {Ack.Horn, :error}]
 
-        def handle_envio(%{key: "callback", status: :ok, value: :ack} = message, state) do
+        def handle_envio(%{key: key, status: :ack} = message, state) do
           {:noreply, state} = super(message, state)
-          send(unquote(self()), {:ok, "callback", :ack})
+          send(unquote(self()), :ack)
+          {:noreply, state}
+        end
+
+        def handle_envio(%{key: key, status: :nack} = message, state) do
+          {:noreply, state} = super(message, state)
+          send(unquote(self()), :nack)
+          {:noreply, state}
+        end
+
+        def handle_envio(%{status: :unknown} = message, state) do
+          {:noreply, state} = super(message, state)
+          send(unquote(self()), :error)
+          {:noreply, state}
+        end
+
+        def handle_envio(%{status: :invalid} = message, state) do
+          {:noreply, state} = super(message, state)
+          send(unquote(self()), :invalid)
           {:noreply, state}
         end
       end
@@ -35,17 +53,44 @@ defmodule AckTest do
     assert Ack.Active.plato_get("Ack.listen/1") == {:ok, %{channel: :ack, timeout: 5000}}
   end
 
-  test "callback" do
-    Ack.listen(%{key: "callback"})
+  test "callback_ack" do
+    Ack.listen(%{key: "callback_ack"})
 
     conn =
       :post
-      |> conn("/api/acknowledgements/callback", %{key: "callback", value: :ack})
+      |> conn("/api/acknowledgements/callback", %{key: "callback_ack", value: "ack"})
       |> Ack.Callback.Camarero.Handler.call(@opts)
 
     assert conn.status == 200
 
-    assert_receive {:ok, "callback", :ack}
-    assert Ack.Active.plato_get("callback") == :error
+    assert_receive :ack
+    assert Ack.Active.plato_get("callback_ack") == :error
+  end
+
+  test "callback_nack" do
+    Ack.listen(%{key: "callback_nack"})
+
+    conn =
+      :post
+      |> conn("/api/acknowledgements/callback", %{key: "callback_nack", value: "nack"})
+      |> Ack.Callback.Camarero.Handler.call(@opts)
+
+    assert conn.status == 200
+
+    assert_receive :nack
+    assert Ack.Active.plato_get("callback_nack") == {:ok, %{channel: :ack, timeout: 5000}}
+  end
+
+  test "callback_ko" do
+    Ack.listen(%{key: "callback_ko"})
+
+    conn =
+      :post
+      |> conn("/api/acknowledgements/callback", %{key: "not_existing", value: "ack"})
+      |> Ack.Callback.Camarero.Handler.call(@opts)
+
+    assert conn.status == 200
+
+    assert_receive :invalid
   end
 end
