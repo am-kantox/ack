@@ -13,13 +13,28 @@ defmodule Ack do
     `App2` for a message
 
   ```elixir
-  %{id: id, timeout: msecs, channel: :ack}
+  %{key: key, timeout: msecs, channel: :ack}
   ```
 
-  where `id` is the unique identifier of the message to be acknowledged.
-  Upon receival `Ack` will broadcast the message to `:ack` channel. `App1`
+  where `key` is the unique identifier of the message to be acknowledged.
+  Upon receival, if the `key` is known to the system, `Ack` will broadcast
+  the message of the following shape
+
+  ```elixir
+  %{status: :ok, key: key, value: value}
+  ```
+
+  to `:ack` channel (unless configured otherwise, see later). `App1`
   should be subscribed to `{Ack.Horn, :ack}` channel in order to receive
   this message.
+
+  If the `key` is unknown to the system, the message of the following shape
+
+  ```elixir
+  %{status: :error, key: key, value: value}
+  ```
+
+  will be broadcasted to `{Ack.Horn, :error}` channel.
 
   The broadcast is done with [`Envío`](https://hexdocs.pm/envio/envio.html)
     package, consider reading the documentation there to get more details about
@@ -35,11 +50,14 @@ defmodule Ack do
 
 
   """
-  @spec listen(map()) :: :ok | {:error, term()}
-  def listen(%{id: id} = params) do
-    timeout = Map.get(params, :timeout, 5_000)
-    channel = Map.get(params, :channel, :ack)
+  @timeout 5_000
+  @channel :ack
 
-    Ack.Active.plato_put(id, %{timeout: timeout, channel: channel})
+  @spec listen(map()) :: :ok | {:error, term()}
+  def listen(%{key: key} = params) do
+    Ack.Active.plato_put(to_string(key), %{
+      timeout: Map.get(params, :timeout, @timeout),
+      channel: Map.get(params, :channel, @channel)
+    })
   end
 end
