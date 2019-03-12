@@ -34,6 +34,12 @@ defmodule AckTest do
           send(unquote(self()), :invalid)
           {:noreply, state}
         end
+
+        def handle_envio(%{status: :timeout} = message, state) do
+          {:noreply, state} = super(message, state)
+          send(unquote(self()), :timeout)
+          {:noreply, state}
+        end
       end
 
     Code.compiler_options(ignore_module_conflict: true)
@@ -50,7 +56,7 @@ defmodule AckTest do
 
   test "Ack.listen/1" do
     Ack.listen(%{key: "Ack.listen/1"})
-    assert Ack.Active.plato_get("Ack.listen/1") == {:ok, %{channel: :ack, timeout: 5000}}
+    assert {:ok, %{timeout: 5_000}} = Ack.Active.plato_get("Ack.listen/1")
   end
 
   test "callback_ack" do
@@ -78,7 +84,7 @@ defmodule AckTest do
     assert conn.status == 200
 
     assert_receive :nack
-    assert Ack.Active.plato_get("callback_nack") == {:ok, %{channel: :ack, timeout: 5000}}
+    assert {:ok, %{timeout: 5_000}} = Ack.Active.plato_get("callback_nack")
   end
 
   test "callback_ko" do
@@ -92,5 +98,12 @@ defmodule AckTest do
     assert conn.status == 200
 
     assert_receive :invalid
+  end
+
+  test "timeout" do
+    Ack.listen(%{key: "timeout", timeout: 10})
+    Process.sleep(50)
+
+    assert_receive :timeout
   end
 end

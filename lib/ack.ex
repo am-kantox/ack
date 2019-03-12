@@ -12,7 +12,7 @@ defmodule Ack do
   In this scenario, `App1` might instruct `Ack` to listen for the `ack` from
     `App2` for a message
 
-  - `%{key: key, timeout: msecs, channel: :ack}`
+  - `%{key: key, timeout: msecs}`
 
   where `key` is the unique identifier of the message to be acknowledged.
   Upon receival, if the `key` is known to the system, `Ack` will broadcast
@@ -39,21 +39,43 @@ defmodule Ack do
   Currently only HTTP endpoint is supported for ack callbacks.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-
-  """
   @timeout 5_000
-  @channel :ack
 
-  @spec listen(map()) :: :ok | {:error, term()}
+  @type t() :: %{key: String.t(), timeout: timeout()}
+
+  @doc """
+  Adds a listener for the key with a timeout specified (defaults to `5` sec.)
+  """
+  @spec listen(t()) :: :ok | {:error, term()}
   def listen(%{key: key} = params) do
-    Ack.Active.plato_put(to_string(key), %{
+    key = to_string(key)
+
+    params = %{
+      key: key,
       timeout: Map.get(params, :timeout, @timeout),
-      channel: Map.get(params, :channel, @channel)
-    })
+      timestamp: DateTime.utc_now()
+    }
+
+    wait_for_response(params)
+    Ack.Active.plato_put(key, params)
+  end
+
+  # TODO make it dynamically supervised
+  defp wait_for_response(%{key: key, timeout: timeout}) do
+    Task.start(fn ->
+      Process.sleep(timeout)
+
+      case Ack.Active.plato_get(key) do
+        {:ok, %{timestamp: ts}} ->
+          if DateTime.diff(DateTime.utc_now(), ts, :millisecond) > timeout do
+            Ack.Horn.ack(%{status: :timeout, key: key})
+          end
+
+          :ok
+
+        :error ->
+          :ok
+      end
+    end)
   end
 end

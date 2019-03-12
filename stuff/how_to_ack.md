@@ -43,6 +43,16 @@ defmodule MyApp.AckHandler do
 end
 ```
 
+To start expecting for the _ACK_, one simple calls `Ack.listen/1` passing the following map as a parameter of a type [`Ack.t`]:
+
+```elixir
+    Ack.listen(%{key: "user_123", timeout: 5_000})
+```
+
+When the callback with a payload having `%{}` will be received, the message will be broadcasted to all the pub-sub listeners of one of aforementioned `Ack.Horn` channels, depending on the state.
+
+---
+
 The _whole_ implementation required from `App2` to start supporting _ACKs_ would be to _HTTP POST_ to the predefined endpoint the message of a shape `%{key: entity_id, value: :ack or :nack}`.
 
 That’s it.

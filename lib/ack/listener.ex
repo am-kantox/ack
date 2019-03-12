@@ -16,7 +16,7 @@ defmodule Ack.Listener do
 
   defp do_handle_envio("ack", key) do
     case Ack.Active.plato_get(key) do
-      {:ok, %{channel: :ack}} ->
+      {:ok, %{}} ->
         Ack.Active.plato_delete(key)
         Ack.Horn.ack(%{status: :ack, key: key})
 
