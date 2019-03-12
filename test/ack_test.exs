@@ -101,9 +101,7 @@ defmodule AckTest do
   end
 
   test "timeout" do
-    Ack.listen(%{key: "timeout", timeout: 10})
-    Process.sleep(1_000)
-
+    Ack.listen(%{key: "timeout", timeout: 50})
     assert_receive :timeout
   end
 end
