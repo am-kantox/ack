@@ -2,7 +2,7 @@ defmodule Ack.MixProject do
   use Mix.Project
 
   @app :ack
-  @version "0.1.2"
+  @version "0.1.3"
 
   def project do
     [
