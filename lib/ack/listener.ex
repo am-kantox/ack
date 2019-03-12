@@ -14,6 +14,8 @@ defmodule Ack.Listener do
     {:noreply, state}
   end
 
+  def handle_envio(message, state), do: super(message, state)
+
   defp do_handle_envio("ack", key) do
     case Ack.Active.plato_get(key) do
       {:ok, %{}} ->

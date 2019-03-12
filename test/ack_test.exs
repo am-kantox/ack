@@ -4,7 +4,7 @@ defmodule AckTest do
 
   doctest Ack
 
-  @opts Ack.Callback.Camarero.Handler.init([])
+  @opts Ack.Camarero.Handler.init([])
 
   setup do
     ast =
@@ -59,13 +59,24 @@ defmodule AckTest do
     assert {:ok, %{timeout: 5_000}} = Ack.Active.plato_get("Ack.listen/1")
   end
 
+  test "active" do
+    Ack.listen(%{key: "active"})
+
+    conn =
+      :get
+      |> conn("/api/acknowledgements/active/active")
+      |> Ack.Camarero.Handler.call(@opts)
+
+    assert conn.status == 200
+  end
+
   test "callback_ack" do
     Ack.listen(%{key: "callback_ack"})
 
     conn =
       :post
       |> conn("/api/acknowledgements/callback", %{key: "callback_ack", value: "ack"})
-      |> Ack.Callback.Camarero.Handler.call(@opts)
+      |> Ack.Camarero.Handler.call(@opts)
 
     assert conn.status == 200
 
@@ -79,7 +90,7 @@ defmodule AckTest do
     conn =
       :post
       |> conn("/api/acknowledgements/callback", %{key: "callback_nack", value: "nack"})
-      |> Ack.Callback.Camarero.Handler.call(@opts)
+      |> Ack.Camarero.Handler.call(@opts)
 
     assert conn.status == 200
 
@@ -93,7 +104,7 @@ defmodule AckTest do
     conn =
       :post
       |> conn("/api/acknowledgements/callback", %{key: "not_existing", value: "ack"})
-      |> Ack.Callback.Camarero.Handler.call(@opts)
+      |> Ack.Camarero.Handler.call(@opts)
 
     assert conn.status == 200
 
@@ -102,6 +113,6 @@ defmodule AckTest do
 
   test "timeout" do
     Ack.listen(%{key: "timeout", timeout: 50})
-    assert_receive :timeout
+    assert_receive :timeout, 1_000
   end
 end
