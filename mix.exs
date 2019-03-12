@@ -56,11 +56,14 @@ defmodule Ack.MixProject do
 
   defp docs() do
     [
-      # main: @app_name,
+      main: "how_to_ack",
       source_ref: "v#{@version}",
       canonical: "http://hexdocs.pm/#{@app}",
       logo: "stuff/i/logo-48.png",
-      source_url: "https://github.com/am-kantox/#{@app}"
+      source_url: "https://github.com/am-kantox/#{@app}",
+      extras: [
+        "stuff/how_to_ack.md"
+      ]
     ]
   end
 end

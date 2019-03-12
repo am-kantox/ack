@@ -1,4 +1,5 @@
 defmodule Ack.Horn do
+  @moduledoc false
   use Envio.Publisher
 
   def ack(what), do: broadcast(:ack, what)
