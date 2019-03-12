@@ -43,10 +43,10 @@ defmodule MyApp.AckHandler do
 end
 ```
 
-To start expecting for the _ACK_, one simple calls `Ack.listen/1` passing the following map as a parameter of a type [`Ack.t`]:
+To start expecting for the _ACK_, one simple calls `Ack.listen/1` passing the following map as a parameter of a type `Ack.t`:
 
 ```elixir
-    Ack.listen(%{key: "user_123", timeout: 5_000})
+Ack.listen(%{key: "user_123", timeout: 5_000})
 ```
 
 When the callback with a payload having `%{}` will be received, the message will be broadcasted to all the pub-sub listeners of one of aforementioned `Ack.Horn` channels, depending on the state.
@@ -59,7 +59,7 @@ That’s it.
 
 ## Why not?
 
-In many [over]complicated systems there are already robust queue-based presented. If the whole system already has the intercommunication pipeline, providing back-and-forth validation and monitoring of everything, `Ack` would most likely not suit. Still, it’s robust and comprehensive.
+In many [over]complicated systems there are already robust queue-based ack-back pipelines presented. If the whole system already has the intercommunication pipeline, providing back-and-forth validation and monitoring of everything, `Ack` would most likely not suit. Still, it’s robust and comprehensive.
 
 ## Is it of any good?
 
