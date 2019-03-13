@@ -1,6 +1,7 @@
 use Mix.Config
 
 config :camarero,
-  cowboy: [port: 30009, scheme: :http, options: []],
   carta: [Ack.Callback, Ack.Active],
-  root: "api/acknowledgements"
+  root: ""
+
+if File.exists?("config/#{Mix.env()}.exs"), do: import_config("#{Mix.env()}.exs")

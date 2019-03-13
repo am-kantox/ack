@@ -2,7 +2,7 @@ defmodule Ack.MixProject do
   use Mix.Project
 
   @app :ack
-  @version "0.2.6"
+  @version "0.3.0"
 
   def project do
     [
@@ -62,7 +62,8 @@ defmodule Ack.MixProject do
       logo: "stuff/i/logo-48.png",
       source_url: "https://github.com/am-kantox/#{@app}",
       extras: [
-        "stuff/how_to_ack.md"
+        "stuff/how_to_ack.md",
+        "stuff/plugging_it_in.md"
       ]
     ]
   end
