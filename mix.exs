@@ -2,7 +2,7 @@ defmodule Ack.MixProject do
   use Mix.Project
 
   @app :ack
-  @version "0.3.0"
+  @version "0.3.1"
 
   def project do
     [
@@ -29,7 +29,7 @@ defmodule Ack.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:camarero, "~> 0.6.1"},
+      {:camarero, "~> 0.6"},
       {:credo, "~> 1.0", only: :dev},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
