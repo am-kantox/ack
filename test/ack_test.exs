@@ -48,7 +48,7 @@ defmodule AckTest do
     {:ok, pid} = mod.start_link()
 
     on_exit(fn ->
-      Sucker.terminate(:normal, Envio.Channels.state())
+      mod.terminate(:normal, Envio.Channels.state())
     end)
 
     %{pid: pid}
@@ -78,7 +78,7 @@ defmodule AckTest do
       |> conn("/api/acknowledgements/callback", %{key: "callback_ack", value: "ack"})
       |> Ack.Camarero.Handler.call(@opts)
 
-    assert conn.status == 200
+    assert conn.status == 201
 
     assert_receive :ack
     assert Ack.Active.plato_get("callback_ack") == :error
@@ -92,7 +92,7 @@ defmodule AckTest do
       |> conn("/api/acknowledgements/callback", %{key: "callback_nack", value: "nack"})
       |> Ack.Camarero.Handler.call(@opts)
 
-    assert conn.status == 200
+    assert conn.status == 201
 
     assert_receive :nack
     assert {:ok, %{timeout: 5_000}} = Ack.Active.plato_get("callback_nack")
@@ -106,7 +106,7 @@ defmodule AckTest do
       |> conn("/api/acknowledgements/callback", %{key: "not_existing", value: "ack"})
       |> Ack.Camarero.Handler.call(@opts)
 
-    assert conn.status == 200
+    assert conn.status == 201
 
     assert_receive :invalid
   end

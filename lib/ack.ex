@@ -60,22 +60,20 @@ defmodule Ack do
     Ack.Active.plato_put(key, params)
   end
 
-  # TODO make it dynamically supervised
   defp wait_for_response(%{key: key, timeout: timeout}) do
-    Task.start(fn ->
+    Task.Supervisor.async(Ack.TaskSupervisor, fn ->
       Process.sleep(timeout)
 
       case Ack.Active.plato_get(key) do
         {:ok, %{timestamp: ts}} ->
-          if DateTime.diff(DateTime.utc_now(), ts, :millisecond) > timeout do
-            Ack.Horn.ack(%{status: :timeout, key: key})
-          end
-
-          :ok
+          maybe_ack(DateTime.diff(DateTime.utc_now(), ts, :millisecond) > timeout, key)
 
         :error ->
           :ok
       end
     end)
   end
+
+  defp maybe_ack(true, key), do: Ack.Horn.ack(%{status: :timeout, key: key})
+  defp maybe_ack(false, _key), do: :ok
 end
