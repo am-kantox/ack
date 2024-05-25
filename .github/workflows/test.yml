@@ -31,4 +31,4 @@ jobs:
           mix do deps.get, compile
           mix compile
       - name: Run tests
-        run: mix tests
+        run: mix test
