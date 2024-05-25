@@ -1,4 +1,6 @@
-# ![Ack Logo](https://raw.githubusercontent.com/am-kantox/ack/master/stuff/i/logo-48.png)   Ack [![Kantox ❤ OSS](https://img.shields.io/badge/❤-kantox_oss-informational.svg)](https://kantox.com/)  ![Test](https://github.com/am-kantox/ack/workflows/Test/badge.svg)  ![Dialyzer](https://github.com/am-kantox/ack/workflows/Dialyzer/badge.svg)  **Tiny drop-in for painless acknowledgements across different applications.**
+# ![Ack Logo](https://raw.githubusercontent.com/am-kantox/ack/master/stuff/i/logo-48.png)   Ack [![Kantox ❤ OSS](https://img.shields.io/badge/❤-kantox_oss-informational.svg)](https://kantox.com/)  ![Test](https://github.com/am-kantox/ack/workflows/Test/badge.svg)  ![Dialyzer](https://github.com/am-kantox/ack/workflows/Dialyzer/badge.svg)
+
+**Tiny drop-in for painless acknowledgements across different applications.**
 
 ## About
 
