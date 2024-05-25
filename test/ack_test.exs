@@ -4,7 +4,9 @@ defmodule AckTest do
 
   doctest Ack
 
-  @opts Ack.Camarero.Handler.init([])
+  alias Ack.Camarero.Handler
+
+  @opts Handler.init([])
 
   setup do
     ast =
@@ -65,7 +67,7 @@ defmodule AckTest do
     conn =
       :get
       |> conn("/api/acknowledgements/active/active")
-      |> Ack.Camarero.Handler.call(@opts)
+      |> Handler.call(@opts)
 
     assert conn.status == 200
   end
@@ -76,7 +78,7 @@ defmodule AckTest do
     conn =
       :post
       |> conn("/api/acknowledgements/callback", %{key: "callback_ack", value: "ack"})
-      |> Ack.Camarero.Handler.call(@opts)
+      |> Handler.call(@opts)
 
     assert conn.status == 201
 
@@ -90,7 +92,7 @@ defmodule AckTest do
     conn =
       :post
       |> conn("/api/acknowledgements/callback", %{key: "callback_nack", value: "nack"})
-      |> Ack.Camarero.Handler.call(@opts)
+      |> Handler.call(@opts)
 
     assert conn.status == 201
 
@@ -104,7 +106,7 @@ defmodule AckTest do
     conn =
       :post
       |> conn("/api/acknowledgements/callback", %{key: "not_existing", value: "ack"})
-      |> Ack.Camarero.Handler.call(@opts)
+      |> Handler.call(@opts)
 
     assert conn.status == 201
 

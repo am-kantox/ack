@@ -7,14 +7,23 @@ defmodule Ack.MixProject do
   def project do
     [
       app: @app,
+      name: "Ack",
       version: @version,
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       package: package(),
       xref: [exclude: []],
       description: description(),
+      aliases: aliases(),
       deps: deps(),
-      docs: docs()
+      docs: docs(),
+      dialyzer: [
+        plt_file: {:no_warn, ".dialyzer/dialyzer.plt"},
+        plt_add_deps: :app_tree,
+        plt_add_apps: [:mix],
+        list_unused_filters: true,
+        ignore_warnings: ".dialyzer/ignore.exs"
+      ]
     ]
   end
 
@@ -31,7 +40,8 @@ defmodule Ack.MixProject do
     [
       {:camarero, "~> 1.0"},
       {:credo, "~> 1.0", only: :dev},
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:dialyxir, "~> 1.0", only: :dev}
     ]
   end
 
@@ -54,7 +64,19 @@ defmodule Ack.MixProject do
     ]
   end
 
-  defp docs() do
+  defp aliases do
+    [
+      test: ["test --exclude distributed", "test --exclude test include distributed"],
+      quality: ["format", "credo --strict", "dialyzer --unmatched_returns"],
+      "quality.ci": [
+        "format --check-formatted",
+        "credo --strict",
+        "dialyzer"
+      ]
+    ]
+  end
+
+  defp docs do
     [
       main: "how_to_ack",
       source_ref: "v#{@version}",

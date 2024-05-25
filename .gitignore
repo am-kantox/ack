@@ -26,3 +26,5 @@ erl_crash.dump
 ack-*.tar
 
 .elixir-tools
+
+.dialyzer/dialyzer.plt*
