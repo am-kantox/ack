@@ -39,9 +39,9 @@ defmodule Ack.MixProject do
   defp deps do
     [
       {:camarero, "~> 1.0"},
-      {:credo, "~> 1.0", only: :dev},
-      {:ex_doc, ">= 0.0.0", only: :dev},
-      {:dialyxir, "~> 1.0", only: :dev}
+      {:credo, "~> 1.0", only: [:dev, :test]},
+      {:dialyxir, "~> 1.0", only: [:dev, :test]},
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
