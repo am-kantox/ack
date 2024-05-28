@@ -8,7 +8,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      MIX_ENV: ci
+      MIX_ENV: test
     name: OTP ${{matrix.pair.otp}} / Elixir ${{matrix.pair.elixir}}
     strategy:
       fail-fast: false
